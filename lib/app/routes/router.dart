@@ -1,8 +1,8 @@
 import 'package:chatbuddy/app/routes/screen_export.dart';
-import 'package:chatbuddy/app/view/chat.dart';
-import 'package:chatbuddy/app/view/home.dart';
-import 'package:chatbuddy/app/view/login.dart';
-import 'package:chatbuddy/app/view/sigin.dart';
+import 'package:chatbuddy/app/view/chats/chat.dart';
+import 'package:chatbuddy/app/view/home/home.dart';
+import 'package:chatbuddy/app/view/auth/login.dart';
+import 'package:chatbuddy/app/view/auth/sigin.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {

@@ -1,4 +1,5 @@
 import 'package:chatbuddy/app/common/toast_message.dart';
+import 'package:chatbuddy/app/view/chats/widget/message_input.dart';
 import 'package:chatbuddy/app/widget/chat_bubble.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -145,41 +146,15 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.emoji_emotions),
-                  onPressed: () {
-                    setState(() {
-                      _isEmojiPickerVisible = !_isEmojiPickerVisible;
-                    });
-                  },
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
-            ),
+          MessageInput(
+            messageController: _messageController,
+            onSendMessage: _sendMessage,
+            isEmojiPickerVisible: _isEmojiPickerVisible,
+            onToggleEmojiPicker: () {
+              setState(() {
+                _isEmojiPickerVisible = !_isEmojiPickerVisible;
+              });
+            },
           ),
         ],
       ),

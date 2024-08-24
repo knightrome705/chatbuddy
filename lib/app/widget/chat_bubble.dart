@@ -23,10 +23,10 @@ class ChatBubble extends StatelessWidget {
         children: [
           if (!isSent) 
             CircleAvatar(
-              child: Text(userName[0]), // Display the first letter of the user's name
+              backgroundImage: const AssetImage('assets/icons/user.png'), // Display user image
               backgroundColor: Colors.grey[300],
             ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Flexible(
             child: Column(
               crossAxisAlignment: isSent ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -44,7 +44,7 @@ class ChatBubble extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   '${time.hour}:${time.minute}',
                   style: TextStyle(
@@ -56,10 +56,10 @@ class ChatBubble extends StatelessWidget {
             ),
           ),
           if (isSent) 
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
           if (isSent)
             CircleAvatar(
-              child: Text(userName[0]), // Display the first letter of the user's name
+              backgroundImage: const AssetImage('assets/icons/user.png'), // Display user image
               backgroundColor: Colors.grey[300],
             ),
         ],
