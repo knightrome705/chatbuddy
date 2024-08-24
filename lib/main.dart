@@ -1,4 +1,5 @@
-import 'package:chatbuddy/app/view/splash.dart';
+import 'package:chatbuddy/app/routes/route_constants.dart';
+import 'package:chatbuddy/app/routes/router.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,12 +12,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Chatbuddy',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Splash(),
+     initialRoute: splashScreenRoute,
+     onGenerateRoute: generateRoute,
     );
   }
 }
