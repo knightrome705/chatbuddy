@@ -1,3 +1,4 @@
+import 'package:chatbuddy/app/common/toast_message.dart';
 import 'package:flutter/material.dart';
 import 'package:chatbuddy/app/widget/custom_textfield.dart';
 import 'package:chatbuddy/app/routes/screen_export.dart';
@@ -27,23 +28,46 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         // Sign in with email and password
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Update Firestore with user status
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).update({
-          'status': 'online',
-          'lastOnline': FieldValue.serverTimestamp(),
-        });
+        // Get user ID
+        final userId = userCredential.user!.uid;
+
+        // Update or create Firestore document with user status
+        final userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        // Check if the user document exists
+        final userDoc = await userDocRef.get();
+
+        if (userDoc.exists) {
+          // Update Firestore with user status
+          await userDocRef.update({
+            'status': 'online',
+            'lastOnline': FieldValue.serverTimestamp(),
+          });
+        } else {
+          // Create Firestore document if it does not exist
+          await userDocRef.set({
+            'email': _emailController.text.trim(),
+            'status': 'online',
+            'lastOnline': FieldValue.serverTimestamp(),
+          });
+        }
 
         // Proceed to home screen
         Navigator.pushReplacementNamed(context, homeScreenRoute);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        // Log the error
+        print('Login error: $e');
+
+        // Display an error message
+        showToastMessage(message: 'Error: ${e.toString()}');
+       
       }
     }
   }
@@ -61,7 +85,10 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const Padding(
                   padding: EdgeInsets.all(20),
-                  child: Text("Login", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -100,7 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: Colors.red,
                     shadowColor: Colors.black,
                     elevation: 5,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -112,9 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                IconButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, siginScreenRoute),
-                  icon: const Text(
+                TextButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, siginScreenRoute),
+                  child: const Text(
                     'Don\'t have an account?',
                     style: TextStyle(color: Colors.blue),
                   ),

@@ -1,3 +1,4 @@
+import 'package:chatbuddy/app/common/toast_message.dart';
 import 'package:flutter/material.dart';
 import 'package:chatbuddy/app/widget/custom_textfield.dart';
 import 'package:chatbuddy/app/routes/screen_export.dart';
@@ -19,6 +20,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _nameController = TextEditingController(); // Controller for name
   File? _imageFile; // Variable to hold the selected image
   final ImagePicker _picker = ImagePicker(); // Instance of ImagePicker
 
@@ -27,6 +29,7 @@ class _SignInScreenState extends State<SignInScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -47,15 +50,14 @@ class _SignInScreenState extends State<SignInScreen> {
 
     try {
       final fileName = DateTime.now().toString();
-      final storageRef = FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
+      final storageRef =
+          FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
       final uploadTask = storageRef.putFile(_imageFile!);
       final snapshot = await uploadTask.whenComplete(() => {});
       final imageUrl = await snapshot.ref.getDownloadURL();
       return imageUrl;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
-      );
+      showToastMessage(message: 'Failed to upload image: ${e.toString()}');
       return '';
     }
   }
@@ -63,32 +65,34 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match')),
-        );
+        showToastMessage(message: "Passwords do not match");
         return;
       }
 
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
         final imageUrl = await _uploadImage();
 
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+          'name': _nameController.text.trim(), // Save name
           'email': _emailController.text.trim(),
           'status': 'online',
           'lastOnline': FieldValue.serverTimestamp(),
           'profilePicture': imageUrl,
         });
+        showToastMessage(message: "Welcome");
 
         Navigator.pushReplacementNamed(context, homeScreenRoute);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        showToastMessage(message: 'Error: ${e.toString()}');
       }
     }
   }
@@ -98,6 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Center(
           child: Form(
             key: _formKey,
@@ -106,7 +111,9 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 const Padding(
                   padding: EdgeInsets.all(20),
-                  child: Text("Sign Up", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  child: Text("Sign Up",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ),
                 if (_imageFile != null)
                   CircleAvatar(
@@ -117,12 +124,26 @@ class _SignInScreenState extends State<SignInScreen> {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.grey[300],
-                    child:  Icon(Icons.camera_alt, color: Colors.grey[700]),
+                    child: Icon(Icons.camera_alt, color: Colors.grey[700]),
                   ),
                 TextButton(
                   onPressed: _pickImage,
                   child: const Text('Pick Profile Image'),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: CustomTextField(
+                    controller: _nameController,
+                    hintText: 'Enter your name',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: CustomTextField(
@@ -175,7 +196,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     backgroundColor: Colors.red,
                     shadowColor: Colors.black,
                     elevation: 5,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -188,7 +210,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 const SizedBox(height: 20),
                 IconButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, loginScreenRoute),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, loginScreenRoute),
                   icon: const Text(
                     'Already have an account?',
                     style: TextStyle(color: Colors.blue),
