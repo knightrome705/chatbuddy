@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:chatbuddy/app/widget/custom_textfield.dart';
 import 'package:chatbuddy/app/routes/screen_export.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -15,6 +19,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  File? _imageFile; // Variable to hold the selected image
+  final ImagePicker _picker = ImagePicker(); // Instance of ImagePicker
 
   @override
   void dispose() {
@@ -24,9 +30,38 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String> _uploadImage() async {
+    if (_imageFile == null) {
+      return '';
+    }
+
+    try {
+      final fileName = DateTime.now().toString();
+      final storageRef = FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
+      final uploadTask = storageRef.putFile(_imageFile!);
+      final snapshot = await uploadTask.whenComplete(() => {});
+      final imageUrl = await snapshot.ref.getDownloadURL();
+      return imageUrl;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
+      );
+      return '';
+    }
+  }
+
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // Check if passwords match
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Passwords do not match')),
@@ -35,13 +70,20 @@ class _SignInScreenState extends State<SignInScreen> {
       }
 
       try {
-        // Create user with email and password
         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Proceed to home screen
+        final imageUrl = await _uploadImage();
+
+        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+          'email': _emailController.text.trim(),
+          'status': 'online',
+          'lastOnline': FieldValue.serverTimestamp(),
+          'profilePicture': imageUrl,
+        });
+
         Navigator.pushReplacementNamed(context, homeScreenRoute);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -65,6 +107,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 const Padding(
                   padding: EdgeInsets.all(20),
                   child: Text("Sign Up", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ),
+                if (_imageFile != null)
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: FileImage(_imageFile!),
+                  )
+                else
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[300],
+                    child:  Icon(Icons.camera_alt, color: Colors.grey[700]),
+                  ),
+                TextButton(
+                  onPressed: _pickImage,
+                  child: const Text('Pick Profile Image'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),

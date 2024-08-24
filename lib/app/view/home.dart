@@ -1,5 +1,6 @@
 import 'package:chatbuddy/app/widget/user_listtile.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -24,28 +25,41 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          UserListTile(
-            name: 'John Doe',
-            lastMessage: 'Hey, how are you?',
-            time: '12:45 PM',
-            profilePicture: 'assets/images/user1.jpg',
-          ),
-          UserListTile(
-            name: 'Jane Smith',
-            lastMessage: 'Can we meet tomorrow?',
-            time: '11:30 AM',
-            profilePicture: 'assets/images/user2.jpg',
-          ),
-          UserListTile(
-            name: 'Michael Brown',
-            lastMessage: 'Don\'t forget the meeting!',
-            time: 'Yesterday',
-            profilePicture: 'assets/images/user3.jpg',
-          ),
-          // Add more UserListTile widgets here
-        ],
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No users available'));
+          }
+
+          final users = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              final name = user['email'];
+              // final lastMessage = user['lastMessage'] ?? 'No messages yet';
+              // final time = user['lastMessageTime'] ?? 'Unknown';
+              final profilePicture = user['profilePicture'] ?? 'assets/images/logo.jpg';
+
+              return UserListTile(
+                name: name,
+                lastMessage: "null",
+                time: "time",
+                profilePicture: profilePicture,
+              );
+            },
+          );
+        },
       ),
     );
   }

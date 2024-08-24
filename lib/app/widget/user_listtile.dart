@@ -1,4 +1,3 @@
-import 'package:chatbuddy/app/routes/screen_export.dart';
 import 'package:flutter/material.dart';
 
 class UserListTile extends StatelessWidget {
@@ -8,26 +7,23 @@ class UserListTile extends StatelessWidget {
   final String profilePicture;
 
   const UserListTile({
-    Key? key,
     required this.name,
     required this.lastMessage,
     required this.time,
     required this.profilePicture,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: AssetImage(profilePicture),
+        backgroundImage: NetworkImage(profilePicture),
+        backgroundColor: Colors.grey[200], // Default background color if image is not loaded
       ),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(name),
       subtitle: Text(lastMessage),
-      trailing: Text(time, style: const TextStyle(color: Colors.grey)),
-      onTap: () {
-        // Navigate to the chat screen or perform another action
-        Navigator.pushNamed(context, chatScreenRoute);
-      },
+      trailing: Text(time),
     );
   }
 }
