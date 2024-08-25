@@ -83,24 +83,28 @@ Copy code
 
             <!!-----chatBuddy Splash Screen-----!>
 
-            ![alt text](chatbuddy_splash.jpg)
+            ![chatbuddy_splash](https://github.com/user-attachments/assets/ce186ad2-e1b0-4e74-8d17-e54926fc8162)
+
 
 
             <!!-----chatBuddy Splash Signup Screen-----!>
             
-            ![alt text](chatbuddy_signup.jpg)
+            ![chatbuddy_signup](https://github.com/user-attachments/assets/386c6542-2209-4226-b2c9-cdec8d410ecc)
+
 
             <!!-----chatBuddy Splash Login Screen-----!>
 
+               ![chatbuddy_signup](https://github.com/user-attachments/assets/79c5fc02-8845-49b1-bfcc-f21080645675)
 
-            ![alt text](chatbuddy_login.jpg)
+            
 
 
               <!!-----chatBuddy Splash Home Screen-----!>
 
-              ![alt text](chatbuddy_home.jpg)
+              ![chatbuddy_home](https://github.com/user-attachments/assets/f178a9c4-25dc-4b21-9b9b-406d0498d12f)
+
 
 
               <!!-----chatBuddy Splash Chat Screen-----!>
 
-              ![alt text](chatbuddy_chatpage.jpg)
+              ![chatbuddy_chatpage](https://github.com/user-attachments/assets/0074f69f-dad9-4df0-bcc5-76cb4bb3bcdd)
