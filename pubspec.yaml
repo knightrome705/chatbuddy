@@ -40,6 +40,7 @@ dependencies:
   fluttertoast: ^8.2.8
   image_picker: ^1.1.2
   intl: ^0.19.0
+  lottie: ^3.1.2
   provider: ^6.1.2
 
 dev_dependencies:
@@ -60,6 +61,7 @@ flutter:
   assets:
     - assets/images/logo.jpg
     - assets/icons/user.png
+    - assets/animation/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see
@@ -69,10 +71,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Rubik
+      fonts:
+        - asset: assets\fonts\Rubik-Italic-VariableFont_wght.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
