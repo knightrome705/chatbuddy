@@ -40,7 +40,7 @@ Clone this repository to your local machine:
 bash
 Copy code
 
-    git clone https://github.com/yourusername/chatbuddy.git
+    git clone https://github.com/knightrome705/chatbuddy.git
 
 
 
@@ -75,3 +75,32 @@ Copy code
             Verify that your app has internet access.
             📧 Contact
             For any issues or feature requests, please open an issue on the GitHub repository.
+
+
+            //images//
+
+
+
+            <!!-----chatBuddy Splash Screen-----!>
+
+            ![alt text](chatbuddy_splash.jpg)
+
+
+            <!!-----chatBuddy Splash Signup Screen-----!>
+            
+            ![alt text](chatbuddy_signup.jpg)
+
+            <!!-----chatBuddy Splash Login Screen-----!>
+
+
+            ![alt text](chatbuddy_login.jpg)
+
+
+              <!!-----chatBuddy Splash Home Screen-----!>
+
+              ![alt text](chatbuddy_home.jpg)
+
+
+              <!!-----chatBuddy Splash Chat Screen-----!>
+
+              ![alt text](chatbuddy_chatpage.jpg)
