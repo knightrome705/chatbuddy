@@ -6,18 +6,18 @@ class UserListTile extends StatelessWidget {
   final String lastMessage;
   final String time;
   final String profilePicture;
-  final String receiverId; // Add this line
-  final String receiverName; // Add this line
-  final String receiverImage; // Add this line
+  final String receiverId; 
+  final String receiverName; 
+  final String receiverImage; 
 
   const UserListTile({
     required this.name,
     required this.lastMessage,
     required this.time,
     required this.profilePicture,
-    required this.receiverId, // Add this line
-    required this.receiverName, // Add this line
-    required this.receiverImage, // Add this line
+    required this.receiverId, 
+    required this.receiverName, 
+    required this.receiverImage, 
     super.key,
   });
 
@@ -38,7 +38,7 @@ class UserListTile extends StatelessWidget {
       },
       leading: CircleAvatar(
         backgroundImage: NetworkImage(profilePicture),
-        backgroundColor: Colors.grey[200], // Default background color if image is not loaded
+        backgroundColor: Colors.grey[200], 
       ),
       title: Text(name),
       subtitle: Text(lastMessage),

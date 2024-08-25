@@ -23,7 +23,7 @@ class ChatBubble extends StatelessWidget {
         children: [
           if (!isSent) 
             CircleAvatar(
-              backgroundImage: const AssetImage('assets/icons/user.png'), // Display user image
+              backgroundImage: const AssetImage('assets/icons/user.png'), 
               backgroundColor: Colors.grey[300],
             ),
           const SizedBox(width: 8),
@@ -59,7 +59,7 @@ class ChatBubble extends StatelessWidget {
             const SizedBox(width: 8),
           if (isSent)
             CircleAvatar(
-              backgroundImage: const AssetImage('assets/icons/user.png'), // Display user image
+              backgroundImage: const AssetImage('assets/icons/user.png'), 
               backgroundColor: Colors.grey[300],
             ),
         ],

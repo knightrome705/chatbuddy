@@ -12,13 +12,12 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // Replace the image container with Lottie animation
             Container(
               height: 200,
               width: 200,
               child: Lottie.asset(
-                'assets/animation/splash.json', // Path to your Lottie animation file
-                // fit: BoxFit.cover,
+                'assets/animation/splash.json', 
+                
               ),
             ),
             const Text(

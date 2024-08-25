@@ -17,7 +17,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _nameController = TextEditingController(); // Controller for name
+  final _nameController = TextEditingController(); 
 
   @override
   void dispose() {

@@ -30,7 +30,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isEmojiPickerVisible = false;
 
-  // Method to send a message
   Future<void> _sendMessage() async {
     final messageText = _messageController.text.trim();
 
@@ -55,13 +54,13 @@ class _ChatScreenState extends State<ChatScreen> {
         _messageController.clear();
         setState(() {
           _isEmojiPickerVisible =
-              false; // Hide emoji picker after sending message
+              false; 
         });
       }
     }
   }
 
-  // Get chat document ID based on both users' IDs
+
   String _getChatId(String userId, String receiverId) {
     return userId.hashCode <= receiverId.hashCode
         ? '$userId-$receiverId'
@@ -73,14 +72,14 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
+          
           Positioned.fill(
             child: Image.asset(
-              'assets/images/background.jpg', // Path to your background image
+              'assets/images/background.jpg', 
               fit: BoxFit.cover,
             ),
           ),
-          // Chat UI
+         
           Column(
             children: [
               AppBar(
@@ -141,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         final chatDocs = snapshot.data!.docs;
                         return ListView.builder(
                           reverse:
-                              true, // To show the latest messages at the bottom
+                              true,
                           itemCount: chatDocs.length,
                           itemBuilder: (context, index) {
                             final chat =

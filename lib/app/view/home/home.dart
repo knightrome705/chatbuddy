@@ -1,6 +1,5 @@
 import 'package:chatbuddy/app/common/toast_message.dart';
 import 'package:chatbuddy/app/controller/home/home_provider.dart';
-import 'package:chatbuddy/app/routes/route_constants.dart';
 import 'package:chatbuddy/app/widget/user_listtile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                   final lastMessage =
                       user['status'] as String? ?? 'No messages yet';
 
-                  // Extract and format the lastOnline timestamp using the provider
+                 
                   final lastOnline = user['lastOnline'] as Timestamp?;
                   final lastOnlineTime =
                       homeProvider.formatLastOnlineTime(lastOnline);
@@ -69,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                     lastMessage: lastMessage,
                     time: lastOnlineTime,
                     profilePicture: profilePicture,
-                    receiverId: user.id, // Pass these parameters
+                    receiverId: user.id, 
                     receiverName: name,
                     receiverImage: profilePicture,
                   );
