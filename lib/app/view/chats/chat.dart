@@ -71,106 +71,121 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(widget.receiverImage),
-                ),
-                const SizedBox(width: 10),
-                Text(widget.receiverName),
-                Text("(${widget.recieverStatus})",style: TextStyle(fontSize: 10),),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.video_call),
-            onPressed: () {
-              showToastMessage(message: "currently unavailable");
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.call),
-            onPressed: () {
-              showToastMessage(message: "currently unavailable");
-            },
-          ),
-        ],
-      ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: Stack(
-              children: [
-                StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('chats')
-                      .doc(_getChatId(
-                          _auth.currentUser?.uid ?? '', widget.receiverId))
-                      .collection('messages')
-                      .orderBy('createdAt', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text('No messages yet.'));
-                    }
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/background.jpg', // Path to your background image
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Chat UI
+          Column(
+            children: [
+              AppBar(
+                title: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(widget.receiverImage),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(widget.receiverName),
+                        Text(
+                          "(${widget.recieverStatus})",
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.video_call),
+                    onPressed: () {
+                      showToastMessage(message: "currently unavailable");
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.call),
+                    onPressed: () {
+                      showToastMessage(message: "currently unavailable");
+                    },
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('chats')
+                          .doc(_getChatId(
+                              _auth.currentUser?.uid ?? '', widget.receiverId))
+                          .collection('messages')
+                          .orderBy('createdAt', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text('No messages yet.'));
+                        }
 
-                    final chatDocs = snapshot.data!.docs;
-                    return ListView.builder(
-                      reverse:
-                          true, // To show the latest messages at the bottom
-                      itemCount: chatDocs.length,
-                      itemBuilder: (context, index) {
-                        final chat =
-                            chatDocs[index].data() as Map<String, dynamic>;
-                        final isSent =
-                            chat['senderId'] == _auth.currentUser?.uid;
-                        return ChatBubble(
-                          isSent: isSent,
-                          message: chat['text'],
-                          time: (chat['createdAt'] as Timestamp).toDate(),
-                          userName: chat['senderName'],
+                        final chatDocs = snapshot.data!.docs;
+                        return ListView.builder(
+                          reverse:
+                              true, // To show the latest messages at the bottom
+                          itemCount: chatDocs.length,
+                          itemBuilder: (context, index) {
+                            final chat =
+                                chatDocs[index].data() as Map<String, dynamic>;
+                            final isSent =
+                                chat['senderId'] == _auth.currentUser?.uid;
+                            return ChatBubble(
+                              isSent: isSent,
+                              message: chat['text'],
+                              time: (chat['createdAt'] as Timestamp).toDate(),
+                              userName: chat['senderName'],
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                ),
-                if (_isEmojiPickerVisible)
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: SizedBox(
-                      height: 250,
-                      child: EmojiPicker(
-                        onEmojiSelected: (category, emoji) {
-                          setState(() {
-                            _messageController.text += emoji.emoji;
-                          });
-                        },
-                      ),
                     ),
-                  ),
-              ],
-            ),
-          ),
-          MessageInput(
-            messageController: _messageController,
-            onSendMessage: _sendMessage,
-            isEmojiPickerVisible: _isEmojiPickerVisible,
-            onToggleEmojiPicker: () {
-              setState(() {
-                _isEmojiPickerVisible = !_isEmojiPickerVisible;
-              });
-            },
+                    if (_isEmojiPickerVisible)
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: SizedBox(
+                          height: 250,
+                          child: EmojiPicker(
+                            onEmojiSelected: (category, emoji) {
+                              setState(() {
+                                _messageController.text += emoji.emoji;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              MessageInput(
+                messageController: _messageController,
+                onSendMessage: _sendMessage,
+                isEmojiPickerVisible: _isEmojiPickerVisible,
+                onToggleEmojiPicker: () {
+                  setState(() {
+                    _isEmojiPickerVisible = !_isEmojiPickerVisible;
+                  });
+                },
+              ),
+            ],
           ),
         ],
       ),
