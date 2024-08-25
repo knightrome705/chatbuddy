@@ -1,77 +1,47 @@
+// chat_screen.dart
 import 'package:chatbuddy/app/common/toast_message.dart';
+import 'package:chatbuddy/app/controller/chats/chat_provider.dart';
 import 'package:chatbuddy/app/view/chats/widget/message_input.dart';
 import 'package:chatbuddy/app/widget/chat_bubble.dart';
-import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends StatelessWidget {
   final String receiverId;
   final String receiverName;
   final String receiverImage;
+  final String receiverStatus;
 
   const ChatScreen({
     super.key,
     required this.receiverId,
     required this.receiverName,
     required this.receiverImage,
+    required this.receiverStatus,
   });
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
-}
-
-class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _messageController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  bool _isEmojiPickerVisible = false;
-
-  // Method to send a message
-  Future<void> _sendMessage() async {
-    final messageText = _messageController.text.trim();
-
-    if (messageText.isNotEmpty) {
-      final user = _auth.currentUser;
-      if (user != null) {
-        final chatId = _getChatId(user.uid, widget.receiverId);
-
-        await _firestore.collection('chats').doc(chatId).collection('messages').add({
-          'text': messageText,
-          'createdAt': Timestamp.now(),
-          'senderId': user.uid,
-          'senderName': user.displayName ?? 'Anonymous',
-          'receiverId': widget.receiverId,
-        });
-
-        showToastMessage(message: "Message sent");
-        _messageController.clear();
-        setState(() {
-          _isEmojiPickerVisible = false; // Hide emoji picker after sending message
-        });
-      }
-    }
-  }
-
-  // Get chat document ID based on both users' IDs
-  String _getChatId(String userId, String receiverId) {
-    return userId.hashCode <= receiverId.hashCode
-        ? '$userId-$receiverId'
-        : '$receiverId-$userId';
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatProvider>(context);
+    final messageController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: Column(
           children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(widget.receiverImage),
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(receiverImage),
+                ),
+                const SizedBox(width: 10),
+                Text(receiverName),
+                Text("(${receiverStatus})", style: TextStyle(fontSize: 10)),
+              ],
             ),
-            const SizedBox(width: 10),
-            Text(widget.receiverName),
           ],
         ),
         actions: [
@@ -95,12 +65,8 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Stack(
               children: [
                 StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('chats')
-                      .doc(_getChatId(_auth.currentUser?.uid ?? '', widget.receiverId))
-                      .collection('messages')
-                      .orderBy('createdAt', descending: true)
-                      .snapshots(),
+                  stream: chatProvider.getMessagesStream(chatProvider.getChatId(
+                      FirebaseAuth.instance.currentUser?.uid ?? '', receiverId)),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -118,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       itemCount: chatDocs.length,
                       itemBuilder: (context, index) {
                         final chat = chatDocs[index].data() as Map<String, dynamic>;
-                        final isSent = chat['senderId'] == _auth.currentUser?.uid;
+                        final isSent = chat['senderId'] == FirebaseAuth.instance.currentUser?.uid;
                         return ChatBubble(
                           isSent: isSent,
                           message: chat['text'],
@@ -129,16 +95,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     );
                   },
                 ),
-                if (_isEmojiPickerVisible)
+                if (chatProvider.isEmojiPickerVisible)
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: SizedBox(
                       height: 250,
                       child: EmojiPicker(
                         onEmojiSelected: (category, emoji) {
-                          setState(() {
-                            _messageController.text += emoji.emoji;
-                          });
+                          chatProvider.addEmojiToMessage(messageController, emoji);
                         },
                       ),
                     ),
@@ -147,14 +111,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           MessageInput(
-            messageController: _messageController,
-            onSendMessage: _sendMessage,
-            isEmojiPickerVisible: _isEmojiPickerVisible,
-            onToggleEmojiPicker: () {
-              setState(() {
-                _isEmojiPickerVisible = !_isEmojiPickerVisible;
-              });
+            messageController: messageController,
+            onSendMessage: () async {
+              await chatProvider.sendMessage(receiverId, messageController.text.trim());
+              messageController.clear();
             },
+            isEmojiPickerVisible: chatProvider.isEmojiPickerVisible,
+            onToggleEmojiPicker: chatProvider.toggleEmojiPicker,
           ),
         ],
       ),

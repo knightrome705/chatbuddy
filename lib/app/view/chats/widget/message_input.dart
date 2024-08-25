@@ -46,10 +46,13 @@ class _MessageInputState extends State<MessageInput> {
               onSubmitted: (_) => widget.onSendMessage(),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: widget.onSendMessage,
-          ),
+          FloatingActionButton(
+            backgroundColor: Colors.blue,
+            onPressed:widget.onSendMessage,child:const Icon(Icons.send,color: Colors.white,) , )
+          // IconButton(
+          //   icon: const Icon(Icons.send,color: Colors.blue,),
+          //   onPressed: widget.onSendMessage,
+          // ),
         ],
       ),
     );

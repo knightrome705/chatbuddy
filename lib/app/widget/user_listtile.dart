@@ -32,6 +32,7 @@ class UserListTile extends StatelessWidget {
             'receiverId': receiverId,
             'receiverName': receiverName,
             'receiverImage': receiverImage,
+            'receiverStatus':lastMessage
           },
         );
       },

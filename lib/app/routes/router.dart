@@ -28,27 +28,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
       
     case chatScreenRoute:
-      // Check if arguments are provided and cast them safely
-      if (settings.arguments != null ) {
+    
+    
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (context) => ChatScreen(
             receiverId: args['receiverId'],
             receiverName: args['receiverName'],
             receiverImage: args['receiverImage'],
+             receiverStatus:args['receiverStatus'],
           ),
         );
-      } else {
-        // Handle the case when arguments are missing
-        return MaterialPageRoute(
-          builder: (context) => const Scaffold(
-            body: Center(
-              child: Text("Invalid or missing arguments for ChatScreen"),
-            ),
-          ),
-        );
-      }
-      
+  
     default:
       return MaterialPageRoute(
         builder: (context) => const Scaffold(

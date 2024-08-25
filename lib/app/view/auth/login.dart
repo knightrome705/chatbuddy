@@ -1,9 +1,9 @@
-import 'package:chatbuddy/app/common/toast_message.dart';
+import 'package:chatbuddy/app/controller/auth/login_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:chatbuddy/app/widget/custom_textfield.dart';
 import 'package:chatbuddy/app/routes/screen_export.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chatbuddy/app/common/toast_message.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,47 +27,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Sign in with email and password
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+        final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+        await loginProvider.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
         );
-
-        // Get user ID
-        final userId = userCredential.user!.uid;
-
-        // Update or create Firestore document with user status
-        final userDocRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
-
-        // Check if the user document exists
-        final userDoc = await userDocRef.get();
-
-        if (userDoc.exists) {
-          // Update Firestore with user status
-          await userDocRef.update({
-            'status': 'online',
-            'lastOnline': FieldValue.serverTimestamp(),
-          });
-        } else {
-          // Create Firestore document if it does not exist
-          await userDocRef.set({
-            'email': _emailController.text.trim(),
-            'status': 'online',
-            'lastOnline': FieldValue.serverTimestamp(),
-          });
-        }
-
-        // Proceed to home screen
         Navigator.pushReplacementNamed(context, homeScreenRoute);
       } catch (e) {
-        // Log the error
-        print('Login error: $e');
-
-        // Display an error message
-        showToastMessage(message: 'Error: ${e.toString()}');
-       
+        showToastMessage(message: e.toString());
       }
     }
   }
@@ -127,8 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: Colors.red,
                     shadowColor: Colors.black,
                     elevation: 5,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -141,8 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextButton(
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, siginScreenRoute),
+                  onPressed: () => Navigator.pushReplacementNamed(context, siginScreenRoute),
                   child: const Text(
                     'Don\'t have an account?',
                     style: TextStyle(color: Colors.blue),
