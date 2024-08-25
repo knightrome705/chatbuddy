@@ -24,12 +24,8 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {
-              showToastMessage(message: "currently unavailable");
+              _showPopupMenu(context);
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
           ),
         ],
       ),
@@ -57,13 +53,16 @@ class HomeScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final user = users[index];
                   final name = user['name'] as String? ?? 'Unknown';
-                  final lastMessage = user['status'] as String? ?? 'No messages yet';
+                  final lastMessage =
+                      user['status'] as String? ?? 'No messages yet';
 
                   // Extract and format the lastOnline timestamp using the provider
                   final lastOnline = user['lastOnline'] as Timestamp?;
-                  final lastOnlineTime = homeProvider.formatLastOnlineTime(lastOnline);
+                  final lastOnlineTime =
+                      homeProvider.formatLastOnlineTime(lastOnline);
 
-                  final profilePicture = user['profilePicture'] as String? ?? 'assets/images/logo.jpg';
+                  final profilePicture = user['profilePicture'] as String? ??
+                      'assets/images/logo.jpg';
 
                   return UserListTile(
                     name: name,
@@ -83,8 +82,35 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _logout(BuildContext context) async {
+  void _showPopupMenu(BuildContext context) async {
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-    await homeProvider.logout(context);
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        MediaQuery.of(context).size.width - 50,
+        kToolbarHeight,
+        0,
+        0,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'profile',
+          child: ListTile(
+            onTap: ()=>showToastMessage(message: "'currently unavailable"),
+            leading:const Icon(Icons.person),
+            title:const Text('Profile'),
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'logout',
+          child: ListTile(
+            onTap: () => homeProvider.logout(context),
+            leading:const Icon(Icons.logout),
+            title:const Text('Logout'),
+          ),
+        ),
+      ],
+      elevation: 8.0,
+    );
   }
 }

@@ -36,7 +36,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             receiverId: args['receiverId'],
             receiverName: args['receiverName'],
             receiverImage: args['receiverImage'],
-             receiverStatus:args['receiverStatus'],
+             recieverStatus:args['receiverStatus'],
           ),
         );
   

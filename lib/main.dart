@@ -1,9 +1,9 @@
 import 'package:chatbuddy/app/controller/auth/auth_provider.dart';
 import 'package:chatbuddy/app/controller/auth/login_provider.dart';
-import 'package:chatbuddy/app/controller/chats/chat_provider.dart';
 import 'package:chatbuddy/app/controller/home/home_provider.dart';
 import 'package:chatbuddy/app/routes/route_constants.dart';
 import 'package:chatbuddy/app/routes/router.dart';
+import 'package:chatbuddy/app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -22,7 +22,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        // ChangeNotifierProvider(create: (_) => ChatPr 
       ],
       child: const MyApp(),
     ),
@@ -37,10 +37,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chatbuddy',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme:AppTheme.lightTheme(context) ,
       initialRoute: splashScreenRoute,
       onGenerateRoute: generateRoute,
     );
