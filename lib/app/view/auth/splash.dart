@@ -22,7 +22,7 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
             const Text(
-              "Welcome to the chat world",
+              "Welcome to chatBuddy",
               style: TextStyle(fontSize: 20),
             ),
             IconButton(
